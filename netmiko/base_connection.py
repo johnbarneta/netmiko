@@ -1390,8 +1390,9 @@ class BaseConnection(object):
             new_data = self.read_until_pattern(pattern=re.escape(cmd))
             new_data = self.normalize_linefeeds(new_data)
             # Strip off everything before the command echo (to avoid false positives on the prompt)
-            if new_data.count(cmd) == 1:
-                new_data = new_data.split(cmd)[1:]
+            cmd_count = new_data.count(cmd)
+            if cmd_count >=1:
+                new_data = new_data.split(cmd)[cmd_count:]
                 new_data = self.RESPONSE_RETURN.join(new_data)
                 new_data = new_data.lstrip()
                 new_data = f"{cmd}{self.RESPONSE_RETURN}{new_data}"
