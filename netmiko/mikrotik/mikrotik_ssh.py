@@ -79,21 +79,21 @@ class MikrotikBase(CiscoSSHConnection):
         else:
             return a_string
 
-    def strip_command(self, command_string, output):
-        """
-        Strip command_string from output string
+    # def strip_command(self, command_string, output):
+    #     """
+    #     Strip command_string from output string
 
-        MT returns, the Command\nRouterpromptCommand\n\n
-        start the defaut return at len(self.get_prompt())+2*len(command)+1
+    #     MT returns, the Command\nRouterpromptCommand\n\n
+    #     start the defaut return at len(self.get_prompt())+2*len(command)+1
 
-        :param command_string: The command string sent to the device
-        :type command_string: str
+    #     :param command_string: The command string sent to the device
+    #     :type command_string: str
 
-        :param output: The returned output as a result of the command string sen
-        :type output: str
-        """
-        command_length = len(self.find_prompt()) + 2 * (len(command_string)) + 2
-        return output[command_length:]
+    #     :param output: The returned output as a result of the command string sen
+    #     :type output: str
+    #     """
+    #     command_length = len(self.find_prompt()) + 2 * (len(command_string)) + 2
+    #     return output[command_length:]
 
 
 class MikrotikRouterOsSSH(MikrotikBase):
