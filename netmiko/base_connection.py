@@ -78,6 +78,8 @@ class BaseConnection(object):
         allow_auto_change=False,
         encoding="ascii",
         sock=None,
+        jump_host=None,
+        jump_host_port=22,
     ):
         """
         Initialize attributes for establishing connection to target device.
@@ -204,6 +206,8 @@ class BaseConnection(object):
                 argument. Value of `None` indicates to use function `cmd_verify` argument.
         :type global_cmd_verify: bool|None
 
+        :param jump_host: Host to be used as Proxy.
+        :type jump_host: str
         """
         self.remote_conn = None
 
@@ -322,6 +326,9 @@ class BaseConnection(object):
 
             # For SSH proxy support
             self.ssh_config_file = ssh_config_file
+
+        self.jump_host = jump_host
+        self.jump_host_port = jump_host_port
 
         # Establish the remote connection
         self._open()
@@ -893,6 +900,17 @@ class BaseConnection(object):
         elif self.protocol == "ssh":
             ssh_connect_params = self._connect_params_dict()
             self.remote_conn_pre = self._build_ssh_client()
+
+            if self.jump_host:
+                jump_host = paramiko.SSHClient()
+                jump_host.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                jump_host.connect(self.jump_host, port=self.jump_host_port, username='root')
+                jump_host_transport = jump_host.get_transport()
+
+                dest_addr = (self.host, self.port)
+                src_addr = (self.jump_host, self.port)
+
+                ssh_connect_params['sock'] = jump_host_transport.open_channel("direct-tcpip", dest_addr, src_addr)
 
             # initiate SSH connection
             try:
